@@ -1,15 +1,14 @@
-import { useState } from 'react'
-import './App.css'
 
+import './index.css'
+import { ProjectForm } from './features/projects/ProjectForm'
+import { ProjectList } from './features/projects/ProjectList'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <div className="bg-blue-500 text-white p-4">
-      
-      <p className=" ">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div >
+      <p className='m-4 font-bold !important'>hello</p>
+      <ProjectList />
+      <ProjectForm />
     </div>
   )
 }
