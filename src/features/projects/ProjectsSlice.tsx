@@ -102,6 +102,13 @@ export const fetchProjects = createAsyncThunk(
       tasksResponse.json(),
       membersResponse.json()
     ]);
+    // Mapowanie członków zespołu
+    const membersMap = new Map<string, {id: string,name: string}>(
+      membersData.records.map((member: TeamMember) => [
+        member.id, {
+        id: member.id,
+        name: member.fields.Name,
+    }]));
     const tasksMap = new Map<string, Task>(
       tasksData.records.map((task: Task) => [
         task.id,
@@ -109,18 +116,15 @@ export const fetchProjects = createAsyncThunk(
           id: task.id,
           task: task.fields.Task,
           status: task.fields.status,
-          assignedTo: task.fields.assignedTo || []
+          assignedTo: (task.fields.assignedTo || []).map((memberId: string) => 
+            membersMap.get(memberId) || { id: memberId, name: 'Unknown member' }
+          )
         }
       ])
     );
     console.log('projectsData',projectsData)
     console.log('tasksData',tasksData)
     console.log('membersData',membersData)
-    // Mapowanie członków zespołu
-    const membersMap = new Map<string, {id: string,name: string}>(membersData.records.map((member: TeamMember) => [member.id, {
-      id: member.id,
-      name: member.fields.Name,
-    }]));
     console.log('membersMap', membersMap)
     // Mapowanie projektów z zadaniami i członkami zespołu
     return projectsData.records.map((record: ProjectApi) => ({
@@ -136,7 +140,9 @@ export const fetchProjects = createAsyncThunk(
           assignedTo: []
         };
       }),
-      teamMembers: (record.fields.teamMembers || []).map((memberId: string) => membersMap.get(memberId))
+      teamMembers: (record.fields.teamMembers || []).map((memberId: string) => 
+        membersMap.get(memberId) || { id: memberId, name: 'Unknown member' }
+      ),
     }));
     
   }
@@ -203,7 +209,32 @@ const projectsSlice = createSlice({
         .addCase(fetchProjects.fulfilled, (_, action) => {
           return action.payload;
         })
+        // .addCase(addProject.fulfilled, (state, action) => {
+        // state.push(action.payload);
+        // })
+        // builder.addCase(addTeamMember.fulfilled, (state, action) => {
+        //   const { projectId, member } = action.payload;
+        //   const project = state.find((p) => Number(p.id) === projectId);
+        //   if (project) {
+        //     // Aktualizacja teamMembers wewnątrz fields
+        //     if (!project.fields.teamMembers) {
+        //       project.fields.teamMembers = [];
+        //     }
+        //     project.fields.teamMembers.push(member);
+        //   }
+        // });
         
+        // builder.addCase(addTask.fulfilled, (state, action) => {
+        //   const { projectId, task } = action.payload;
+        //   const project = state.find((p) => Number(p.id) === projectId);
+        //   if (project) {
+        //     // Aktualizacja tasks wewnątrz fields
+        //     if (!project.fields.tasks) {
+        //       project.fields.tasks = [];
+        //     }
+        //     project.fields.tasks.push(task);
+        //   }
+        // });
     },
 });
 
