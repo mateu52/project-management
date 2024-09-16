@@ -1,6 +1,6 @@
 
 import './index.css'
-import { ProjectForm } from './features/projects/ProjectForm'
+//import { ProjectForm } from './features/projects/ProjectForm'
 import { ProjectList } from './features/projects/ProjectList'
 function App() {
 
@@ -8,7 +8,7 @@ function App() {
     <div >
       <p className='m-4 font-bold !important'>hello</p>
       <ProjectList />
-      <ProjectForm />
+      {/* <ProjectForm /> */}
     </div>
   )
 }
