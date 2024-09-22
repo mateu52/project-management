@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addUser, updateUser } from './UsersSlice';
+import { addUser, updateUser, User } from './UsersSlice';
+import { AppDispatch } from '../../app/store';
 
-export const UserForm = ({ existingUser }) => {
-    const dispatch = useDispatch();
+interface UserFormProps {
+    existingUser: User | null ;
+}
+
+export const UserForm: React.FC<UserFormProps> = ({ existingUser }) => {
+    const dispatch = useDispatch<AppDispatch>();
     const [name, setName] = useState(existingUser?.name || '');
     const [role, setRole] = useState(existingUser?.role || '');
 

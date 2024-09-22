@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Typ użytkownika
-interface User {
+export interface User {
     id: string;
     name: string;
     role: string;

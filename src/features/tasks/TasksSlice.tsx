@@ -27,7 +27,7 @@ export const addTask = createAsyncThunk(
 );
 const taskSlice = createSlice({
     name: 'tasks',
-    initialState: [] as Task[],
+    initialState,
     reducers: {
         removeTask: ( state, action) => {
             return state.filter((task) => task.id !== action.payload);

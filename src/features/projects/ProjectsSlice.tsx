@@ -8,20 +8,27 @@ export interface TeamMember {
     Name:string;
   }
 }
+export interface AssignedTo {
+  id: string;
+  name: string;
+}
+
+export interface TaskFields {
+  Task: string;
+  assignedTo: AssignedTo[];
+  status?: string;
+}
 
 export interface Task {
   id: string;
-  fields: {
-    Task: string;
-    assignedTo: string[];
-    status?: string;
-  }
+  fields: TaskFields;
 }
 export interface Project {
   id: string;
   name: string;
   description?: string;
   tasks: Task[];
+  teamMembers: AssignedTo[];
   
 }
 export interface ProjectApi {
@@ -103,31 +110,38 @@ export const fetchProjects = createAsyncThunk(
       membersResponse.json()
     ]);
     // Mapowanie członków zespołu
-    const membersMap = new Map<string, {id: string,name: string}>(
+    const membersMap = new Map<string, AssignedTo>(
       membersData.records.map((member: TeamMember) => [
         member.id, {
         id: member.id,
         name: member.fields.Name,
     }]));
+    // tasksData.records.forEach((task: Task) => {
+    //   console.log('Task ID:', task.id);
+    //   console.log('AssignedTo:', task.fields.assignedTo);
+    // });
     const tasksMap = new Map<string, Task>(
-      tasksData.records.map((task: Task) => [
-        task.id,
-        {
-          id: task.id,
-          task: task.fields.Task,
-          status: task.fields.status,
-          assignedTo: (task.fields.assignedTo || []).map((memberId: string) => 
-            membersMap.get(memberId) || { id: memberId, name: 'Unknown member' }
-          )
-        }
-      ])
+      tasksData.records.map((task: Task) => {
+        const assignedToMapped = (task.fields.assignedTo || []).map((memberId: any) => {
+          const member = membersMap.get(memberId); // Pobieranie pełnych danych z membersMap
+          return member || { id: memberId, name: 'Unknown member' }; // Domyślne wartości w przypadku braku danych
+        });
+    
+        return [
+          task.id,
+          {
+            id: task.id,
+            fields: {
+              Task: task.fields.Task || 'Unknown task',
+              status: task.fields.status || 'Not started',
+              assignedTo: assignedToMapped  // Przypisywanie poprawnych danych do assignedTo
+            }
+          }
+        ];
+      })
     );
-    console.log('projectsData',projectsData)
-    console.log('tasksData',tasksData)
-    console.log('membersData',membersData)
-    console.log('membersMap', membersMap)
     // Mapowanie projektów z zadaniami i członkami zespołu
-    return projectsData.records.map((record: ProjectApi) => ({
+    const projectsWithTasks = projectsData.records.map((record: ProjectApi) => ({
       id: record.id,
       name: record.fields.name,
       description: record.fields.description,
@@ -135,16 +149,18 @@ export const fetchProjects = createAsyncThunk(
         const task = tasksMap.get(taskId);
         return task || {
           id: taskId,
-          task: 'Unknown task',
-          status: 'Not started',
-          assignedTo: []
+          fields: {
+            Task: 'Unknown task',
+            status: 'Not started',
+            assignedTo: []
+          }
         };
       }),
       teamMembers: (record.fields.teamMembers || []).map((memberId: string) => 
         membersMap.get(memberId) || { id: memberId, name: 'Unknown member' }
       ),
     }));
-    
+    return projectsWithTasks
   }
 );
 // Thunk do dodawania projektu
