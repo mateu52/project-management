@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../app/store';
-import { fetchProjects, Project, removeProject, updateProject } from './ProjectsSlice';
+import { fetchProjects, Project, removeProject, Task, updateProject } from './ProjectsSlice';
 import { useEffect, useState } from 'react';
 import '../../index.css'
 import { TaskComponent } from './Task';
@@ -13,7 +13,8 @@ export const ProjectList = () => {
     const [description, setDescription] = useState('');
     const [ showTaskComponent, setShowTaskComponent ] = useState(false);
     const [ showList, setShowList ] = useState(true)
-    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     useEffect(() => {
         dispatch(fetchProjects())
@@ -33,10 +34,11 @@ export const ProjectList = () => {
             setDescription('');
         }
     };
-    const handleTask = (taskId :string | null) => {
+    const handleTask = (task: Task | null, project: Project| null ) => {
         setShowTaskComponent(!showTaskComponent);
         setShowList(!showList);
-        setSelectedTaskId(taskId);
+        setSelectedTask(task);
+        setSelectedProject(project);
     }
     console.log('projects:', projects)
     return (
@@ -53,7 +55,7 @@ export const ProjectList = () => {
                     <h3>Tasks:</h3>
                     {project.tasks.map((task) => (
                         <ul key={task.id}>
-                            <li><button onClick={() =>handleTask(task.id)}>{task.fields.Task}</button></li>
+                            <li><button onClick={() =>handleTask(task, project)}>{task.fields.Task}</button></li>
                             
                         </ul>
                     ))}
@@ -78,7 +80,7 @@ export const ProjectList = () => {
                 </div>
             )}
             </>
-            ): <TaskComponent handleTask={handleTask} taskId={selectedTaskId} />}
+            ): <TaskComponent handleTask={handleTask} task={selectedTask} project={selectedProject} />}
         </div>
     );
 };

@@ -1,28 +1,18 @@
-import { TypedUseSelectorHook, useSelector } from "react-redux";
-import { Task } from "./ProjectsSlice";
+import { Project, Task } from "./ProjectsSlice";
 
 interface TaskComponentProps {
-    taskId: string | null;
-    handleTask: (taskId: string | null) => void;
-}
-interface RootState {
-    tasks: Task[];
-    // inne stany...
+    task: Task | null;
+    project: Project | null;
+    handleTask: (task: Task |null, project: Project| null) => void;
 }
 
-const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
-export const TaskComponent = ({handleTask, taskId} : TaskComponentProps) => {
-    const task = useTypedSelector((state) => 
-        state.tasks.find((t) => t.id === taskId)
-    );
-    if (!task) {
-        return <p>Task not found</p>;
-    }
-    console.log(task)
+export const TaskComponent = ({handleTask, task, project} : TaskComponentProps) => {
+    console.log(task, project)
     return (
         <div>
             <p>nazwa taska:</p>
-            <button onClick={() => handleTask(null)}>close</button>
+            <button onClick={() => handleTask(null, null)}>close</button>
+
         </div>
     )
 }
