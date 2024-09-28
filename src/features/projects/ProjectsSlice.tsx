@@ -96,7 +96,7 @@ const initialState: Project[] = [];
 export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
   async () => {
-    const projectsResponse = await fetch(`https://api.airtable.com/v0/app0OwqInWRNrNUgx/Projects`, {
+    const projectsResponse = await fetch(`${import.meta.env.VITE_API_URL}/Projects`, {
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
         'Content-Type': 'application/json',
@@ -104,10 +104,10 @@ export const fetchProjects = createAsyncThunk(
     });
     
     const [tasksResponse, membersResponse] = await Promise.all([
-      fetch('https://api.airtable.com/v0/app0OwqInWRNrNUgx/Tasks', {
+      fetch(`${import.meta.env.VITE_API_URL}/Tasks`, {
         headers: { Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}` }
       }),
-      fetch('https://api.airtable.com/v0/app0OwqInWRNrNUgx/users', {
+      fetch(`${import.meta.env.VITE_API_URL}/users`, {
         headers: { Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}` }
       })
     ]);
