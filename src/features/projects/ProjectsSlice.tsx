@@ -39,9 +39,21 @@ export interface ProjectApi {
     tasks: string[]; //Tablica ID zadań, nie pełne zadania
     teamMembers?: string[]; // Tablica ID członków zespołu, nie pełne obiekty
   }
-  
 }
-
+export interface TypTaskComponent {
+  fields : {
+    Task: string;
+    status: string;
+    assignedTo: {
+      id: string;
+      name: string
+    }
+  }
+  id: string;
+}
+export interface Assigned {
+  memberId: string;  // Identyfikator członka zespołu
+}
 // Inicjalny stan
 const initialState: Project[] = []; 
 
@@ -116,16 +128,17 @@ export const fetchProjects = createAsyncThunk(
         id: member.id,
         name: member.fields.Name,
     }]));
+    console.log(membersMap)
     // tasksData.records.forEach((task: Task) => {
     //   console.log('Task ID:', task.id);
     //   console.log('AssignedTo:', task.fields.assignedTo);
     // });
     const tasksMap = new Map<string, Task>(
       tasksData.records.map((task: Task) => {
-        const assignedToMapped = (task.fields.assignedTo || []).map((memberId: any) => {
-          const member = membersMap.get(memberId); // Pobieranie pełnych danych z membersMap
-          return member || { id: memberId, name: 'Unknown member' }; // Domyślne wartości w przypadku braku danych
-        });
+        const assignedToMapped: AssignedTo[] = (task.fields.assignedTo || []).map((memberId) => {
+          const member: AssignedTo | undefined = membersMap.get(memberId); 
+          return member || { id: memberId, name: 'Unknown member' }; 
+                });
     
         return [
           task.id,

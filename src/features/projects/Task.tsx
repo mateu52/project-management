@@ -1,18 +1,28 @@
-import { Project, Task } from "./ProjectsSlice";
+import { Project, TypTaskComponent } from "./ProjectsSlice";
 
 interface TaskComponentProps {
-    task: Task | null;
+    task: TypTaskComponent | null;
     project: Project | null;
-    handleTask: (task: Task |null, project: Project| null) => void;
+    handleTask: (taskId: string | null, projectId: string | null) => void;
 }
 
 export const TaskComponent = ({handleTask, task, project} : TaskComponentProps) => {
-    console.log(task, project)
+    console.log('task',task,'project', project)
+    //const members = project?)
+    
+    
+    //console.log(members)
     return (
         <div>
             <p>nazwa taska:</p>
             <button onClick={() => handleTask(null, null)}>close</button>
-
+            <h2>{task?.fields.Task}</h2>
+            <p>przypisani : {
+                task?.fields.assignedTo.map((member) => (
+                    <p key={member.id}>{member.name}</p>
+                ))
+                }</p>
+            
         </div>
     )
 }
